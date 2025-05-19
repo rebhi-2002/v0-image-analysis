@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/components/ui/use-toast"
+import { CheckCircle, Loader2 } from "lucide-react"
+import { motion } from "framer-motion"
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -27,6 +29,7 @@ const formSchema = z.object({
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,7 +51,14 @@ export default function ContactForm() {
         title: "Message sent!",
         description: "Thank you for reaching out. I'll get back to you soon.",
       })
-      form.reset()
+      setIsSuccess(true)
+
+      // Reset success state after 3 seconds
+      setTimeout(() => {
+        setIsSuccess(false)
+        form.reset()
+      }, 3000)
+
       setIsSubmitting(false)
     }, 1500)
 
@@ -60,7 +70,11 @@ export default function ContactForm() {
     //       title: "Message sent!",
     //       description: "Thank you for reaching out. I'll get back to you soon.",
     //     })
-    //     form.reset()
+    //     setIsSuccess(true)
+    //     setTimeout(() => {
+    //       setIsSuccess(false)
+    //       form.reset()
+    //     }, 3000)
     //   })
     //   .catch((error) => {
     //     toast({
@@ -85,7 +99,11 @@ export default function ContactForm() {
             <FormItem>
               <FormLabel>Name</FormLabel>
               <FormControl>
-                <Input placeholder="Your name" {...field} />
+                <Input
+                  placeholder="Your name"
+                  {...field}
+                  className="transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -98,7 +116,11 @@ export default function ContactForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="your.email@example.com" {...field} />
+                <Input
+                  placeholder="your.email@example.com"
+                  {...field}
+                  className="transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,7 +133,11 @@ export default function ContactForm() {
             <FormItem>
               <FormLabel>Subject</FormLabel>
               <FormControl>
-                <Input placeholder="What is this regarding?" {...field} />
+                <Input
+                  placeholder="What is this regarding?"
+                  {...field}
+                  className="transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -124,14 +150,40 @@ export default function ContactForm() {
             <FormItem>
               <FormLabel>Message</FormLabel>
               <FormControl>
-                <Textarea placeholder="Your message here..." className="min-h-[120px] resize-y" {...field} />
+                <Textarea
+                  placeholder="Your message here..."
+                  className="min-h-[120px] resize-y transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Sending..." : "Send Message"}
+        <Button type="submit" className="w-full relative overflow-hidden group" disabled={isSubmitting || isSuccess}>
+          <span
+            className={`flex items-center justify-center transition-all duration-300 ${isSuccess ? "opacity-0" : "opacity-100"}`}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
+          </span>
+          {isSuccess && (
+            <motion.span
+              className="absolute inset-0 flex items-center justify-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Message Sent!
+            </motion.span>
+          )}
         </Button>
       </form>
     </Form>

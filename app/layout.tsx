@@ -2,7 +2,12 @@ import type React from "react"
 import "@/app/globals.css"
 import { Inter } from "next/font/google"
 import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeToggle } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
+import MobileNav from "@/components/mobile-nav"
+import CustomCursor from "@/components/custom-cursor"
+import FloatingNav from "@/components/floating-nav"
+import PageTransition from "@/components/page-transition"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,29 +26,47 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <CustomCursor />
           <div className="relative flex min-h-screen flex-col">
-            <header className="sticky top-0 z-40 border-b bg-background">
+            <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-md">
               <div className="container flex h-16 items-center justify-between px-4 md:px-6">
                 <div className="flex items-center gap-2">
-                  <a href="/" className="flex items-center gap-2">
-                    <span className="text-xl font-bold">YourName</span>
+                  <a href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+                    <span className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                      YourName
+                    </span>
                   </a>
                 </div>
                 <nav className="hidden gap-6 md:flex">
-                  <a href="/" className="text-sm font-medium transition-colors hover:text-primary">
+                  <a href="/" className="text-sm font-medium transition-colors hover:text-primary relative group">
                     Home
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
                   </a>
-                  <a href="#portfolio" className="text-sm font-medium transition-colors hover:text-primary">
+                  <a
+                    href="#portfolio"
+                    className="text-sm font-medium transition-colors hover:text-primary relative group"
+                  >
                     Portfolio
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
                   </a>
-                  <a href="#about" className="text-sm font-medium transition-colors hover:text-primary">
+                  <a href="#about" className="text-sm font-medium transition-colors hover:text-primary relative group">
                     About
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
                   </a>
-                  <a href="#contact" className="text-sm font-medium transition-colors hover:text-primary">
+                  <a href="/blog" className="text-sm font-medium transition-colors hover:text-primary relative group">
+                    Blog
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
+                  </a>
+                  <a
+                    href="#contact"
+                    className="text-sm font-medium transition-colors hover:text-primary relative group"
+                  >
                     Contact
+                    <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-primary transition-all group-hover:w-full"></span>
                   </a>
                 </nav>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
+                  <ThemeToggle />
                   <a
                     href="/resume.pdf"
                     target="_blank"
@@ -52,13 +75,12 @@ export default function RootLayout({
                   >
                     Resume
                   </a>
-                  <button className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 md:hidden">
-                    Menu
-                  </button>
+                  <MobileNav />
                 </div>
               </div>
             </header>
-            {children}
+            <PageTransition>{children}</PageTransition>
+            <FloatingNav />
             <Toaster />
           </div>
         </ThemeProvider>
